@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.db
+*.mp4
+*.wav
+.storage/
+dist/
+build/
+.alembic_cache/
+content_factory.db*
