@@ -1,0 +1,41 @@
+name: worker
+on:
+  schedule:
+    - cron: "17 * * * *"  # hourly, tránh trùng phút chẵn
+  workflow_dispatch:
+
+jobs:
+  drain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONPATH: .
+      PYTHONIOENCODING: utf-8
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
+      STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
+      STORAGE_ACCESS_KEY: ${{ secrets.STORAGE_ACCESS_KEY }}
+      STORAGE_SECRET_KEY: ${{ secrets.STORAGE_SECRET_KEY }}
+      STORAGE_REGION: us-east-1
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      API_WORKER_TOKEN: ${{ secrets.API_WORKER_TOKEN }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+      TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      LLM_PROVIDER: gemini
+      LLM_MODEL: gemini-2.5-flash
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      TTS_PROVIDER: edge-tts
+      TTS_MODEL: vi-VN-HoaiMyNeural
+      MAX_RENDER_JOBS_PER_DAY: 20
+      MAX_SELECTED_PER_SOURCE_PER_DAY: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python scripts/drain.py 12

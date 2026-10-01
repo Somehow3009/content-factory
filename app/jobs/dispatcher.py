@@ -103,7 +103,16 @@ def dispatch(job_type: str, entity_id: str) -> None:
         if job_type == "COLLECT_ANALYTICS":
             import asyncio
             from app.analytics.collector import collect_for_publish
-            asyncio.run(collect_for_publish(db, entity_id))
+            if entity_id:
+                asyncio.run(collect_for_publish(db, entity_id))
+            else:  # tick định kỳ: thu cho publishes mới nhất (tối đa 5)
+                for p in db.scalars(select(Publish).where(
+                        Publish.status.in_(["PUBLISHED", "INBOX"]))
+                        .order_by(Publish.created_at.desc()).limit(5)).all():
+                    try:
+                        asyncio.run(collect_for_publish(db, p.id))
+                    except Exception:
+                        db.rollback()
             return
         if job_type == "OPTIMIZE":
             from app.analytics.optimizer import run_rules
