@@ -39,3 +39,9 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python scripts/drain.py 12
+      - run: python scripts/site.py dist
+      - name: Deploy dashboard to Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
