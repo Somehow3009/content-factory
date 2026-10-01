@@ -109,6 +109,6 @@ def test_full_pipeline_offline(tmp_path, monkeypatch):
     s3 = asyncio.run(run_publish(db, pub.id))
     assert s3 == "PUBLISHED"
 
-    from app.analytics.collector import collect_for_publish
-    snap = asyncio.run(collect_for_publish(db, pub.id))
-    assert snap.views > 0
+        from app.analytics.collector import collect_for_publish
+        snap = asyncio.run(collect_for_publish(db, pub.id))
+        assert snap is None  # mock publish -> không bịa số liệu, chỉ API thật mới có snapshot
