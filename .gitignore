@@ -7,6 +7,7 @@ __pycache__/
 *.wav
 .storage/
 dist/
+dist/
 build/
 .alembic_cache/
 content_factory.db*
