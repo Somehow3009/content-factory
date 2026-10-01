@@ -11,7 +11,8 @@ from app.discovery.base import ContentCandidate, EngagementSnapshot, SourceConfi
 
 
 async def _fetch(url: str) -> str:
-    async with httpx.AsyncClient(timeout=30, follow_redirects=True) as c:
+    async with httpx.AsyncClient(timeout=30, follow_redirects=True,
+                                 headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}) as c:
         r = await c.get(url)
         r.raise_for_status()
         return r.text

@@ -94,10 +94,23 @@ def main(out_dir: str = "dist") -> None:
             f"<td style='text-align:right'>{esc(round(c.trend_score or 0, 2))}</td></tr>" for c in cs)
 
     def trow_pubs(ps) -> str:
-        return "".join(
-            f"<tr><td style='font-family:monospace'>{esc(p.id[:8])}</td>"
-            f"<td>{esc(p.platform)}</td><td>{badge(p.status)}</td>"
-            f"<td style='font-family:monospace;font-size:12px'>{esc((p.publish_id or '')[:36])}</td></tr>" for p in ps)
+        rows = []
+        for p in ps:
+            ext = (p.external_post_id or "")[:40]
+            if p.platform == "youtube" and p.external_post_id and not p.external_post_id.startswith("mock"):
+                vid = esc(p.external_post_id)
+                link = (f"<a style='color:#38bdf8' href='https://youtu.be/{vid}'>youtu.be/{vid}</a>"
+                        f" · <a style='color:#64748b' href='https://studio.youtube.com/video/{vid}/edit'>studio</a>")
+            elif p.platform == "tiktok" and p.status == "INBOX":
+                link = "<span style='color:#a78bfa'>mở app TikTok → Inbox</span>"
+            elif p.external_post_id and not p.external_post_id.startswith("mock"):
+                link = f"<span style='font-family:monospace;font-size:12px'>{esc(ext)}</span>"
+            else:
+                link = "<span style='color:#475569'>—</span>"
+            rows.append(
+                f"<tr><td style='font-family:monospace'>{esc(p.id[:8])}</td>"
+                f"<td>{esc(p.platform)}</td><td>{badge(p.status)}</td><td>{link}</td></tr>")
+        return "".join(rows)
 
     def trow_jobs(js) -> str:
         return "".join(
@@ -132,7 +145,7 @@ h1{{font-size:26px;margin:6px 0}}h2{{font-size:18px;margin:28px 0 12px;color:#cb
 <h2>Views theo ngày</h2>
 <div style='background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px'><canvas id=v height=90></canvas></div>
 <h2>Contents mới nhất</h2><table style='{table}'><tr><th>ID</th><th>Tiêu đề</th><th>Trạng thái</th><th>Score</th></tr>{trow_contents(contents)}</table>
-<h2>Publishes mới nhất</h2><table style='{table}'><tr><th>ID</th><th>Nền tảng</th><th>Trạng thái</th><th>External ID</th></tr>{trow_pubs(pubs)}</table>
+<h2>Publishes mới nhất</h2><div class=sub style='margin-bottom:8px'>Views/likes: số liệu thật từ YouTube API · TikTok draft chưa có metrics cho tới khi bạn bấm Post trong app</div><table style='{table}'><tr><th>ID</th><th>Nền tảng</th><th>Trạng thái</th><th>Link video</th></tr>{trow_pubs(pubs)}</table>
 <h2>Jobs mới nhất</h2><table style='{table}'><tr><th>Loại</th><th>Trạng thái</th><th>Thử</th><th>Lỗi</th></tr>{trow_jobs(jobs)}</table>
 <div class=sub style='margin-top:32px'>Content Factory MVP · worker GitHub Actions · DB Neon · Storage Supabase</div>
 </div><script>try{{new Chart(document.getElementById('v'),{{type:'line',

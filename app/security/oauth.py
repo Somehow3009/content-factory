@@ -14,7 +14,8 @@ def authorize_url(provider: str) -> str:
         return f"https://www.tiktok.com/v2/auth/authorize/?{q}"
     if provider in ("youtube", "google"):
         q = urllib.parse.urlencode({"client_id": settings.google_client_id, "response_type": "code",
-                                    "scope": "https://www.googleapis.com/auth/youtube.upload",
+                                    "scope": ("https://www.googleapis.com/auth/youtube.upload "
+                                              "https://www.googleapis.com/auth/youtube.readonly"),
                                     "redirect_uri": settings.google_redirect_uri, "access_type": "offline",
                                     "prompt": "consent", "state": "xyz"})
         return f"https://accounts.google.com/o/oauth2/v2/auth?{q}"
