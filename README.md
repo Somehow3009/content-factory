@@ -1,3 +1,12 @@
+---
+title: Content Factory
+emoji: 🏭
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # Content Factory — MVP v1.0
 
 Cloud-first: laptop chỉ dev, production chạy Cloud (spec §55 Principle 7).
