@@ -112,9 +112,10 @@ def queue_publishes(db: Session, content_id: str, account_ids: list[str], platfo
             exists = db.scalar(select(Publish).where(
                 Publish.platform == platform, Publish.account_id == acc_id,
                 Publish.variant_id == var.id))
-            if exists:
-                continue
-            db.add(Publish(variant_id=var.id, account_id=acc_id, platform=platform, status="CREATED"))
+            if not exists:
+                db.add(Publish(variant_id=var.id, account_id=acc_id, platform=platform, status="CREATED"))
+                db.commit()
+            # luôn đảm bảo có PUBLISH job (row tồn tại nhưng job mất vẫn tự bù)
             q.enqueue(db, "PUBLISH", "publish", var.id, idempotency_key=key)
             n += 1
     db.commit()
